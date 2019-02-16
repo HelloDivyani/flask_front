@@ -40,53 +40,87 @@ def serialize_data(pol):
         }
      
 
-@app.route("/search",methods=['POST', 'GET'])
+@app.route("/search",methods=['POST','GET'])
 def get_search():
-    #print("Search function")
-    if request.method=='POST':
-        #print("here post")
-        features =request.form.getlist('check')
-        option = request.form['optradio']
-        loc=request.form['location']
-        #print(features,option,loc)
-        #print("plz")
 
-        if option=='1':
-            op=[['1.csv']]
-        elif option=='2':
-            op=[['2.csv']]
-        elif option=='3':
-            op=[['3.csv']]
-        elif option=='4':
-            op=[['4.csv']]
-        elif option=='5':
-            op=[['5.csv']]
-        elif option=='6':
-            op=[['6'.csv]]
-        elif option=='7':
-            op=[['7.csv']]
+    print("Inside movie search")
+    try:
+        checkbox = request.args.getlist('check')
+        optradio=request.args["optradio"]
+        location=request.args["location"]
+        print("movies obtained")
+        print(checkbox,optradio,location)
 
-        with open('process3.csv', 'w') as csvfile: 
-            csvwriter = csv.writer(csvfile) 
-            csvwriter.writerows(op)
-            csvwriter.writerows(features)
-        csvfile.close();
-        print("Before subprocess")
-        #execfile("first_borda.py")
-        subprocess.call(['./myshell.sh'])
-        #print("SCript")
-        db = get_db()
-        results = db.run("MATCH (u:User{Screen_Name:'narendramodi'})RETURN u")
-        #for r in results:
-        #   print(r)
-        #print("Here")
-        return Response(dumps([serialize_data(record['u']) for record in results]),
-                    mimetype="application/json")
-        #return render_template("index.html",result = dumps([serialize_data(record['u']) for record in results]),mimetype="application/json")
-        #return render_template("index.html")
+    except KeyError:
+        return []
     else:
-        print("error here")
-        return "error"
+        #print("Search function")
+        if request.method=='GET':
+                        #print("here post")
+            features =checkbox
+            option = optradio
+            loc=location
+            print(features,option,loc)
+            #print("plz")
+
+            if option=='1':
+                op=[['1.csv']]
+            elif option=='2':
+                op=[['2.csv']]
+            elif option=='3':
+                op=[['3.csv']]
+            elif option=='4':
+                op=[['4.csv']]
+            elif option=='5':
+                op=[['5.csv']]
+            elif option=='6':
+                op=[['6'.csv]]
+            elif option=='7':
+                op=[['7.csv']]
+            print("oye")
+            
+            with open('process3.csv', 'w') as csvfile: 
+                csvwriter = csv.writer(csvfile) 
+                csvwriter.writerows(op)
+                csvwriter.writerows(features)
+            csvfile.close();
+
+            print("Before subprocess")
+            #execfile("first_borda.py")
+            subprocess.call(['./myshell.sh'])
+            print("SCript")
+            print("subprocess done")
+
+            rows=[]
+
+            with open('output.csv', 'r') as csvfile: 
+                csvreader = csv.reader(csvfile,delimiter = '\t')
+                for row in csvreader:
+                    rows.append(row[0])
+            csvfile.close();
+            #print(rows)
+    
+            db = get_db()
+            for k in rows:
+                results=db.run("MATCH (u:User{Screen_Name:'narendramodi'})RETURN u")
+           
+            #print(results)
+
+
+            #print([serialize_data(record['u']) for record in results])
+            #for r in results:
+            #   print(r)
+            #print("Here")
+            print("Here Movies")
+            return Response(dumps([serialize_data(record['u']) for record in results]),
+                        mimetype="application/json")
+            #return render_template("index.html",ans=data1)
+            #return render_template("index.html",result = dumps([serialize_data(record['u']) for record in results]),mimetype="application/json")
+            #return render_template("index.html")
+        else:
+            print("error here")
+            return "error"
+    
 
        
 
