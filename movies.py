@@ -99,10 +99,28 @@ def get_search():
                     rows.append(row[0])
             csvfile.close();
             #print(rows)
-    
+
+            
+         
             db = get_db()
+            db.run("MATCH ()-[r:isin]->() DELETE r")
+            db.run("MATCH(n:test) DELETE n")
+            print("Everything ok before create")
+      
+            
+
+            #print("Everything ok before create 2")
+            #print(rows)
             for k in rows:
-                results=db.run("MATCH (u:User{Screen_Name:'narendramodi'})RETURN u")
+                db.run("CREATE(n:test{Test_Name:'"+k+"'})")
+
+            print("OUt of loop")
+            db.run("MATCH (a:test),(b:User)WHERE a.Test_Name=b.Screen_Name CREATE (a)-[r:isin]->(b) RETURN r")
+            print("REady")
+            results=db.run("MATCH(u:User)<-[:isin]-(t:test) RETURN u")
+            #results=db.run("MATCH(u:User{Screen_Name:'narendramodi'}) RETURN u")
+         
+
            
             #print(results)
 
@@ -110,7 +128,8 @@ def get_search():
             #print([serialize_data(record['u']) for record in results])
             #for r in results:
             #   print(r)
-            #print("Here")
+            print("Here")
+
             print("Here Movies")
             return Response(dumps([serialize_data(record['u']) for record in results]),
                         mimetype="application/json")

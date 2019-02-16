@@ -152,12 +152,14 @@
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
 <script type="text/javascript">
     $(function () {
         
 
         $('form').on('submit',function(event){
           search();
+//          csvfileTest()
           event.preventDefault();
         });
 
@@ -165,20 +167,22 @@
 
       //  /?check=1&check=2&optradio=1&location=Bengaluru
       function search() {
+
         //alert('inside jquery search');  
           data1=$('form').serialize();
-         alert(data1);
-          alert(data1);
+        // alert(data1);
+          //alert(data1);
           //alert("form data fetched");
           $.get("/search?"+data1,
                     function (data) {
-                     alert("here once");
+                      alert("Requesting Data .....");
+            //         alert("here once");
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
-                        alert("data is there");
+              //          alert("data is there");
                         data.forEach(function (movie) {
-                            alert("loop");
-                          alert(movie.Name);
+                  //          alert("loop");
+                //          alert(movie.Name);
                             $("<tr><td class='movie'> <img src=" + movie.Image +"></td><td>" + movie.Name + "</td><td>" + movie.Screen_Name +  "</td><td>" + movie.Location + "</td><td>" + movie.Followers+"</td></tr>").appendTo(t)
                            // 
                            //alert("one data");        
@@ -192,6 +196,10 @@
         }
 
   });
+
+
+
+
 </script>
 
 

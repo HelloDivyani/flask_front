@@ -1,0 +1,50 @@
+
+<html>
+<head>
+
+
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+
+<script type="text/javascript">
+$("#filename").change(function(e) {
+var ext = $("input#filename").val().split(".").pop().toLowerCase();
+
+if($.inArray(ext, ["csv"]) == -1) {
+alert('Upload CSV');
+return false;
+}
+    
+if (e.target.files != undefined) {
+var reader = new FileReader();
+reader.onload = function(e) {
+var csvval=e.target.result.split("\n");
+
+var csvvalue=e.target.result.split(",");
+
+var inputrad="";
+for(var i=0;i<csvvalue.length;i++)
+{
+//alert("here");
+//alert(csvvalue[i]);
+var temp=csvvalue[i].split(",");
+
+ inputrad=inputrad+" "+temp;
+}
+$("#csvimporthint").html(inputrad);
+$("#csvimporthinttitle").show();
+};
+reader.readAsText(e.target.files.item(0));
+
+}
+
+return false;
+
+});
+</script>
+</head>
+<body>
+<input type="file" name="filename" id="filename">
+    <div id="csvimporthint"></div>
+    </body>
+</html>
