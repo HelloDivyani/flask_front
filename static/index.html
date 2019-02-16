@@ -122,6 +122,7 @@
                       <th>Location</th>
                     <th>Followers</th>
                     <th>Sentiment</th>
+                    
                         
                        
                 </tr>
@@ -164,8 +165,26 @@
         });
 
 
+   function showMovie(Screen_Name) {
+          $.get("/info?q=" +Screen_Name ,
+                    function (data) {
+                        if (!data) return;
+                       /* $("#title").text(data.title);
+                        $("#poster").attr("src","http://neo4j-contrib.github.io/developer-resources/language-guides/assets/posters/"+encodeURIComponent(data.title)+".jpg");
+                        var $list = $("#crew").empty();
+                        data.cast.forEach(function (cast) {
+                            $list.append($("<li>" + cast.name + " " +cast.job + (cast.job == "acted"?" as " + cast.role : "") + "</li>"));
+                        });*/
+                    }, "json");
+                    alert("inside show movie");
+                    alert(Screen_Name);
+            return false;
+        }
 
-      //  /?check=1&check=2&optradio=1&location=Bengaluru
+function standby() {
+    document.getElementById('myImageId').src = 'https://www.google.com/images/srpr/logo11w.png';
+}
+     
       function search() {
 
         //alert('inside jquery search');  
@@ -183,7 +202,25 @@
                         data.forEach(function (movie) {
                   //          alert("loop");
                 //          alert(movie.Name);
-                            $("<tr><td class='movie'> <img src=" + movie.Image +"></td><td>" + movie.Name + "</td><td>" + movie.Screen_Name +  "</td><td>" + movie.Location + "</td><td>" + movie.Followers+"</td></tr>").appendTo(t)
+                            var pos=movie.positiveTweets+movie.VerypositiveTweets;
+                            var neg=movie.negativeTweets+movie.VerynegativeTweets;
+                            var neu=movie.neutralTweets;
+                            var senti="";
+                            if(pos>neu && pos>neg)
+                            {
+                              senti="Positive";
+                            }
+                            else if(neg>neu && neg>pos)
+                            {
+                              senti="Negative";
+                            }
+                            else
+                            {
+                              senti="Neutral";
+                            }
+                            $("<tr><td class='movie'> <img id='myImageId' onerror='standby()' src=" + movie.Image +"></td><td>" + movie.Name + "</td><td>" + movie.Screen_Name +  "</td><td>" + movie.Location + "</td><td>" + movie.Followers+ "</td><td>" + senti+"</td></tr>").appendTo(t)
+                             .click(function(event) { showMovie(movie.Screen_Name);  
+                              event.preventDefault(); })
                            // 
                            //alert("one data");        
                         });

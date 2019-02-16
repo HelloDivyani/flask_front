@@ -36,9 +36,37 @@ def serialize_data(pol):
         'Name': pol['Name'],
         'Image': pol['Image'],
         'Followers': pol['Followers'],
-        'Location': pol['Location']
+        'Location': pol['Location'],
+        'VerypositiveTweets':pol['VerypositiveTweets'],
+        'VerynegativeTweets':pol['VerynegativeTweets'],
+        'positiveTweets':pol['positiveTweets'],
+        'negativeTweets':pol['negativeTweets']
+
         }
      
+
+
+
+
+
+
+
+@app.route("/info")
+def get_info():
+    try:
+        q = request.args["q"]
+    except KeyError:
+        return []
+    else:
+        print(q)
+
+
+
+
+
+
+
+
 
 @app.route("/search",methods=['POST','GET'])
 def get_search():
@@ -105,7 +133,7 @@ def get_search():
             db = get_db()
             db.run("MATCH ()-[r:isin]->() DELETE r")
             db.run("MATCH(n:test) DELETE n")
-            print("Everything ok before create")
+     #       print("Everything ok before create")
       
             
 
@@ -114,9 +142,9 @@ def get_search():
             for k in rows:
                 db.run("CREATE(n:test{Test_Name:'"+k+"'})")
 
-            print("OUt of loop")
+            #print("OUt of loop")
             db.run("MATCH (a:test),(b:User)WHERE a.Test_Name=b.Screen_Name CREATE (a)-[r:isin]->(b) RETURN r")
-            print("REady")
+            #print("REady")
             results=db.run("MATCH(u:User)<-[:isin]-(t:test) RETURN u")
             #results=db.run("MATCH(u:User{Screen_Name:'narendramodi'}) RETURN u")
          
@@ -128,9 +156,9 @@ def get_search():
             #print([serialize_data(record['u']) for record in results])
             #for r in results:
             #   print(r)
-            print("Here")
+            #print("Here")
 
-            print("Here Movies")
+            #print("Here Movies")
             return Response(dumps([serialize_data(record['u']) for record in results]),
                         mimetype="application/json")
             #return render_template("index.html",ans=data1)
