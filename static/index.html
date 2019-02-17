@@ -74,9 +74,7 @@
                               <label class="radio-inline">
                               <input type="radio" name="optradio" value="6">8-11 October'18
                             </label>
-                              <label class="radio-inline">
-                              <input type="radio" name="optradio" value="7" checked>OverAll
-                            </label>
+                            
                         <br>
                          <h5> Select the Location : </h5>
                           <br>
@@ -109,6 +107,23 @@
     </div>
 </div>
 
+
+<div style="float:right" class="row">
+            <div class="col-sm-6 col-md-6">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <form class="navbar-form" id="shortest">
+                            <div class="form-group">
+                                <input type="text" value="jayantsinha" placeholder="Enter Screen_Name" class="form-control" name="search">
+                            </div>
+                            <button class="btn btn-default" type="submit">Shortest Path</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+</div>
+
+
 <div class="row">
     <div class="col-md-5">
         <div class="panel panel-default">
@@ -116,6 +131,7 @@
             <table id="results" class="table table-striped table-hover">
                 <thead>
                 <tr>
+                  <th>Rank</th>
                     <th>Profile_Image</th>
                     <th>Name</th>
                     <th>Screen_Name</th>
@@ -134,13 +150,13 @@
     </div>
     <div class="col-md-7">
         <div class="panel panel-default">
-            <div class="panel-heading" id="title">Details</div>
+            <div class="panel-heading" id="title"></div>
             <div class="row">
                 <div class="col-sm-4 col-md-4">
                     <img src="" class="well" id="poster"/>
                 </div>
                 <div class="col-md-8 col-sm-8">
-                    <h4>Crew</h4>
+                    <h4>User Details</h4>
                     <ul id="crew">
                     </ul>
                 </div>
@@ -159,14 +175,19 @@
         
 
         $('form').on('submit',function(event){
+          //  alert("Requesting Data .....");
           search();
 //          csvfileTest()
           event.preventDefault();
         });
 
 
-   function showMovie(Screen_Name) {
-          $.get("/info?q=" +Screen_Name ,
+   function showMovie(user) {
+  //  alert(user.Name);
+  /*  alert("Positive"+parseInt(pos));
+    alert("Negative"+parseInt(neg));
+    alert("Neutral"+parseInt(neu));*/
+         /* $.get("/info?q=" +Screen_Name ,
                     function (data) {
                         if (!data) return;
                        /* $("#title").text(data.title);
@@ -174,38 +195,91 @@
                         var $list = $("#crew").empty();
                         data.cast.forEach(function (cast) {
                             $list.append($("<li>" + cast.name + " " +cast.job + (cast.job == "acted"?" as " + cast.role : "") + "</li>"));
-                        });*/
+                        });
                     }, "json");
                     alert("inside show movie");
-                    alert(Screen_Name);
+                    alert(Screen_Name);**/
+                   // alert(user.positiveTweets);
+
+                   // $("#title").text(data.title);
+                    $("#title").text("Name : "+user.Name);
+                        $("#poster").attr("src",user.Image);
+
+                        var positive;
+                        var negative;
+                        var neutral;
+                       // data.cast.forEach(function (cast) {
+                            positive=parseInt(user.positiveTweets)+parseInt(user.VerypositiveTweets);
+                            negative=parseInt(user.negativeTweets)+parseInt(user.VerynegativeTweets);
+                            neutral=parseInt(user.neutralTweets);
+                               var $list = $("#crew").empty();
+                            $list.append($("<li> Screen_Name : "+user.Screen_Name+"</li><li> Followers : "+user.Followers+"</li><li>Positive Tweets : " + positive + "</li><li> Negative Tweets : " +negative+"</li><li>Neutral Tweets :"+neutral+"</li><li>Location : "+user.Location+"</li>"));
+                     // $("#display").text($("<ul><li> Positive Tweets : " + positive + "</li><li> Negative Tweets : " +negative+"</li><li>Neutral Tweets :"+neutral+"</li></ul>"));
+                    //   alert(positive);
+                      // alert(neutral);
+                       //alert(negative);
+                       //alert("")
+                       // });
+                      // $("#display").text("hehe");
+
+                          $("body").scrollTop(0);
+
+
+
+                        /*    $.get("/short",
+                    function (pathdata) {
+                        if (!data) return;
+                        $("#title").text(data.title);
+                        $("#poster").attr("src","http://neo4j-contrib.github.io/developer-resources/language-guides/assets/posters/"+encodeURIComponent(data.title)+".jpg");
+                        var $list = $("#crew").empty();
+                        data.cast.forEach(function (cast) {
+                            $list.append($("<li>" + cast.name + " " +cast.job + (cast.job == "acted"?" as " + cast.role : "") + "</li>"));
+                        });
+                    }, "json");
+            **/
+
+
+
+
             return false;
         }
 
 function standby() {
-    document.getElementById('myImageId').src = 'https://www.google.com/images/srpr/logo11w.png';
+    document.getElementById('myImageId').src = 'http://pbs.twimg.com/profile_images/897752027459080193/RfBvbxfl_normal.jpg';
 }
-     
+     function imgError(image) {
+      alert("IMage Error");
+    image.onerror = "";
+    image.src = "https://www.google.com/images/srpr/logo11w.png";
+    return true;
+}
       function search() {
 
         //alert('inside jquery search');  
           data1=$('form').serialize();
-        // alert(data1);
-          //alert(data1);
-          //alert("form data fetched");
+         
+
+
           $.get("/search?"+data1,
                     function (data) {
-                      alert("Requesting Data .....");
+                         alert("Requesting Data .......");         
+                         //system="";
             //         alert("here once");
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
               //          alert("data is there");
+                    var i=1;
+                    var pos;
+                    var neg;
+                    var neu;
+                    var senti="";
                         data.forEach(function (movie) {
                   //          alert("loop");
-                //          alert(movie.Name);
-                            var pos=movie.positiveTweets+movie.VerypositiveTweets;
-                            var neg=movie.negativeTweets+movie.VerynegativeTweets;
-                            var neu=movie.neutralTweets;
-                            var senti="";
+                              
+                             pos=parseInt(movie.positiveTweets)+parseInt(movie.VerypositiveTweets);
+                             neg=parseInt(movie.negativeTweets)+parseInt(movie.VerynegativeTweets);
+                             neu=parseInt(movie.neutralTweets);
+                            senti="";
                             if(pos>neu && pos>neg)
                             {
                               senti="Positive";
@@ -218,19 +292,38 @@ function standby() {
                             {
                               senti="Neutral";
                             }
-                            $("<tr><td class='movie'> <img id='myImageId' onerror='standby()' src=" + movie.Image +"></td><td>" + movie.Name + "</td><td>" + movie.Screen_Name +  "</td><td>" + movie.Location + "</td><td>" + movie.Followers+ "</td><td>" + senti+"</td></tr>").appendTo(t)
-                             .click(function(event) { showMovie(movie.Screen_Name);  
+                            //alert(pos);
+                          //  alert(neg);
+                            //alert(neu);
+                       //    alert(movie.Name);
+                     // alert(parseInt(pos));
+                    // alert("here"+pos);
+                           // system=system+movie.Image+","+movie.Screen_Name+","+movie.Location+","+movie.Followers+","+movie.Name+"/n";
+                            $("<tr><td class='movie'>"+i+"</td><td><img id='myImageId' onError='this.onerror=null;this.src='http://pbs.twimg.com/profile_images/897752027459080193/RfBvbxfl_normal.jpg'; src=" + movie.Image +"></td><td>" + movie.Name + "</td><td>" + movie.Screen_Name +  "</td><td>" + movie.Location + "</td><td>" + movie.Followers+ "</td><td>" + senti+"</td></tr>").appendTo(t)
+                             .click(function(event) {  showMovie(movie);  
                               event.preventDefault(); })
+                         //    i=parseInt(i)+1;
+                             i=i+1;
+                           //  alert(i);
+                        // alert(movie.Name);
+                          
+
                            // 
                            //alert("one data");        
                         });
+
                         //alert('get reuqest completed');
                        }, "json");
            // alert("Search Jquery finished");
-     
+            
             return false;
 
         }
+
+
+        $("#myImageId").preload({
+          notFound:'http://pbs.twimg.com/profile_images/897752027459080193/RfBvbxfl_normal.jpg'
+        });
 
   });
 

@@ -66,12 +66,12 @@ with open(file, 'r') as csvfile:
             fields = csvreader.next()
             csvreader.next()
             for row in csvreader :
-                rows.append(row[5])
+                rows.append(row[1])
 
             x = csvreader.line_num - 1
   
             for row in rows: 
-                score.append(x-i+1)         
+                score.append(x-i)         
                 i=i+1
                 print "%s\t%d"%(row,score[i-2])
 
@@ -79,6 +79,32 @@ with open(file, 'r') as csvfile:
       
 
 csvfile.close()
+
+with open(file, 'r') as csvfile:
+    score=[]
+    i=1
+    fields=[]
+    csvreader = csv.reader(csvfile)
+    for f in features:
+        if f=='3':
+            rows=[]
+            fields = csvreader.next()
+            csvreader.next()
+            for row in csvreader :
+                rows.append(row[2])
+
+            x = csvreader.line_num - 1
+  
+            for row in rows: 
+                score.append(x-i)         
+                i=i+1
+                print "%s\t%d"%(row,score[i-2])
+
+
+      
+
+csvfile.close()
+
 
 
 

@@ -10,6 +10,7 @@ from flask import Flask, g, Response, request
 from neo4j.v1 import GraphDatabase, basic_auth
 
 app = Flask(__name__, static_url_path='/static/')
+app.config['JSON_SORT_KEYS'] = False
 
 password = os.getenv("NEO4J_PASSWORD")
 
@@ -40,14 +41,11 @@ def serialize_data(pol):
         'VerypositiveTweets':pol['VerypositiveTweets'],
         'VerynegativeTweets':pol['VerynegativeTweets'],
         'positiveTweets':pol['positiveTweets'],
-        'negativeTweets':pol['negativeTweets']
+        'negativeTweets':pol['negativeTweets'],
+        'neutralTweets':pol['neutralTweets']
 
         }
-     
-
-
-
-
+    
 
 
 
@@ -102,14 +100,14 @@ def get_search():
             elif option=='5':
                 op=[['5.csv']]
             elif option=='6':
-                op=[['6'.csv]]
-            elif option=='7':
-                op=[['7.csv']]
+                #print("OPtion 6")
+                op=[['6.csv']]
             print("oye")
             
             with open('process3.csv', 'w') as csvfile: 
                 csvwriter = csv.writer(csvfile) 
                 csvwriter.writerows(op)
+
                 csvwriter.writerows(features)
             csvfile.close();
 
@@ -128,7 +126,7 @@ def get_search():
             csvfile.close();
             #print(rows)
 
-            
+            #print(rows)
          
             db = get_db()
             db.run("MATCH ()-[r:isin]->() DELETE r")
@@ -139,13 +137,23 @@ def get_search():
 
             #print("Everything ok before create 2")
             #print(rows)
+            rank=1
+            print("Before request")
+            print(rank)
             for k in rows:
-                db.run("CREATE(n:test{Test_Name:'"+k+"'})")
+                #print("in loop")
+                #print("ok")
+                #print(rank)
+                #print("k is ",k," is ",rank)
+                #print("k is {k} and rank is {rank}",{"k":k,"rank":rank})
+                #print("k is "+k+"rank is {}".format(rank))
+                db.run("CREATE(n:test{Test_Name:'"+k+"',Position:'"+str(rank)+"'})")
+                rank=rank+1
 
             #print("OUt of loop")
             db.run("MATCH (a:test),(b:User)WHERE a.Test_Name=b.Screen_Name CREATE (a)-[r:isin]->(b) RETURN r")
             #print("REady")
-            results=db.run("MATCH(u:User)<-[:isin]-(t:test) RETURN u")
+            results=db.run("MATCH(u:User)<-[:isin]-(t:test) SET u.Position=t.Position RETURN u ORDER BY toInteger(u.Position)")
             #results=db.run("MATCH(u:User{Screen_Name:'narendramodi'}) RETURN u")
          
 
@@ -174,3 +182,4 @@ def get_search():
         
 if __name__ == '__main__':
     app.run(port=8080)
+
