@@ -65,7 +65,6 @@ def get_info():
 
 
 
-
 @app.route("/search",methods=['POST','GET'])
 def get_search():
 
@@ -175,6 +174,32 @@ def get_search():
         else:
             print("error here")
             return "error"
+
+
+@app.route("/short",methods=['POST','GET'])
+def get_short():
+    print("Inside short")
+
+    try:
+        inname=request.args["name1"]
+        destname=request.args["shortPath"]
+        #print("movies obtained")
+        print(inname,destname)
+    
+        #q = request.args["q"]
+    except KeyError:
+        return []
+    else:
+        db = get_db()
+        print("ready for short db")
+        results = db.run("MATCH (start:User{Screen_Name:'"+inname+"'}), (end:User{Screen_Name:'"+destname+"'}) CALL algo.shortestPath.stream(start, end, 'FOLLOWS')YIELD nodeId RETURN algo.getNodeById(nodeId) as p")
+        print("short ok")
+#        alert("ok")
+        return Response(dumps([serialize_data(record['p']) for record in results]),
+                        mimetype="application/json")
+    
+
+
     
 
        
